@@ -136,6 +136,10 @@ func (s *GwEdgeService) UpdateSliceGwServiceMap(ctx context.Context, in *SliceGw
 
 	if serviceMap == nil {
 		serviceMap = make(map[string]serviceInfo)
+		err := addIpTablesMasqRule()
+		if err != nil {
+			return &GwEdgeResponse{StatusMsg: "Failed to add SNAT iptables"}, err
+		}
 	}
 
 	if !updateNeeded(in.SliceGwServiceList) {
