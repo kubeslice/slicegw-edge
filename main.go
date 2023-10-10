@@ -1,4 +1,4 @@
-/*  Copyright (c) 2022 Avesha, Inc. All rights reserved.
+/*  Copyright (c) 2023 Avesha, Inc. All rights reserved.
  *
  *  SPDX-License-Identifier: Apache-2.0
  *
@@ -93,7 +93,7 @@ func main() {
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 
-	// Start the GRPC Server to communicate with slice controller.
+	// Start the GRPC Server that the worker operator connects to.
 	go startGrpcServer(grpcPort)
 
 	go shutdownHandler(wg)
