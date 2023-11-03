@@ -37,6 +37,7 @@ type GwEdgeService struct {
 
 type serviceInfo struct {
 	svcIP      string
+	protocol   string
 	nodePort   uint32
 	targetPort uint32
 }
@@ -53,6 +54,7 @@ func updateNeeded(svcList []*SliceGwServiceInfo) bool {
 		if updateNeededForSvc(svcInfo.GwSvcName,
 			serviceInfo{
 				svcIP:      svcInfo.GwSvcClusterIP,
+				protocol:   svcInfo.GwSvcProtocol,
 				nodePort:   svcInfo.GwSvcNodePort,
 				targetPort: svcInfo.GwSvcTargetPort,
 			}) {
@@ -69,7 +71,7 @@ func updateNeededForSvc(svcName string, svcInfo serviceInfo) bool {
 		return true
 	}
 
-	if cachedInfo.svcIP != svcInfo.svcIP || cachedInfo.nodePort != svcInfo.nodePort || cachedInfo.targetPort != svcInfo.targetPort {
+	if cachedInfo.svcIP != svcInfo.svcIP || cachedInfo.protocol != svcInfo.protocol || cachedInfo.nodePort != svcInfo.nodePort || cachedInfo.targetPort != svcInfo.targetPort {
 		return true
 	}
 
@@ -83,7 +85,7 @@ func deleteIpTablesRule(svcInfo serviceInfo) error {
 		return err
 	}
 
-	rulespec := fmt.Sprintf("-p udp --dport %d -j DNAT --to-destination %s:%d", svcInfo.nodePort, svcInfo.svcIP, svcInfo.targetPort)
+	rulespec := fmt.Sprintf("-p %s --dport %d -j DNAT --to-destination %s:%d", svcInfo.protocol, svcInfo.nodePort, svcInfo.svcIP, svcInfo.targetPort)
 	err = ipt.DeleteIfExists("nat", "PREROUTING", strings.Split(rulespec, " ")...)
 	if err != nil {
 		return err
@@ -117,7 +119,7 @@ func addIpTablesRuleForSvc(svcName string, svcInfo serviceInfo) error {
 
 	// Be careful while drafting the rulespec. Even a single unwanted, benign
 	// space will result in failed iptables API call.
-	rulespec := fmt.Sprintf("-p udp --dport %d -j DNAT --to-destination %s:%d", svcInfo.nodePort, svcInfo.svcIP, svcInfo.targetPort)
+	rulespec := fmt.Sprintf("-p %s --dport %d -j DNAT --to-destination %s:%d", svcInfo.protocol, svcInfo.nodePort, svcInfo.svcIP, svcInfo.targetPort)
 	err = ipt.AppendUnique("nat", "PREROUTING", strings.Split(rulespec, " ")...)
 	if err != nil {
 		log.Error(err, "Failed to add iptables rule", "rulespec", rulespec)
@@ -186,10 +188,12 @@ func (s *GwEdgeService) UpdateSliceGwServiceMap(ctx context.Context, in *SliceGw
 		nodePort := sliceGwSvcInfo.GwSvcNodePort
 		targetPort := sliceGwSvcInfo.GwSvcTargetPort
 		svcIP := sliceGwSvcInfo.GwSvcClusterIP
+		protocol := sliceGwSvcInfo.GwSvcProtocol
 
 		// Check if an update is needed for this svc
 		if !updateNeededForSvc(sliceGwSvcInfo.GwSvcName, serviceInfo{
 			svcIP:      svcIP,
+			protocol:   protocol,
 			nodePort:   nodePort,
 			targetPort: targetPort,
 		}) {
@@ -205,6 +209,7 @@ func (s *GwEdgeService) UpdateSliceGwServiceMap(ctx context.Context, in *SliceGw
 
 		err = addIpTablesRuleForSvc(sliceGwSvcInfo.GwSvcName, serviceInfo{
 			svcIP:      svcIP,
+			protocol:   protocol,
 			nodePort:   nodePort,
 			targetPort: targetPort,
 		})
