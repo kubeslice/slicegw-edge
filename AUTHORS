@@ -1,0 +1,13 @@
+# Names should be added to this file as
+#	Name or Organization <email address>
+# The email address is not required for organizations.
+
+# You can update this list using the following command:
+#
+#   $ (head -n10 AUTHORS && git shortlog -se | sed -E 's/^\s+[0-9]+\t//') | tee AUTHORS
+
+# Please keep the list sorted.
+MD IMRAN <imranaec@outlook.com>
+Bharath Horatti <bharath@aveshasystems.com>
+Md Imran <imranaec@outlook.com>
+bharath-avesha <99859949+bharath-avesha@users.noreply.github.com>
