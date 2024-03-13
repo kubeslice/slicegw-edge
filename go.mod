@@ -7,7 +7,7 @@ require (
 	github.com/lorenzosaino/go-sysctl v0.3.1
 	go.uber.org/zap v1.25.0
 	google.golang.org/grpc v1.58.3
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
