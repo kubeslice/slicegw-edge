@@ -17,7 +17,7 @@
 #limitations under the License.
 ##########################################################
 
-FROM amd64/golang:1.21.0-alpine3.17 as gobuilder
+FROM amd64/golang:1.22.5-alpine3.20 AS gobuilder
 
 # Install git.
 
@@ -40,7 +40,7 @@ RUN go mod download &&\
 
 # Build reduced image from base alpine
 
-FROM amd64/alpine:3.15
+FROM amd64/alpine:3.20.1
 
 # tc - is needed for traffic control and shaping on the sidecar.  it is part of the iproute2
 

@@ -1,6 +1,6 @@
 module github.com/kubeslice/slicegw-edge
 
-go 1.21
+go 1.22.5
 
 require (
 	github.com/coreos/go-iptables v0.7.0
