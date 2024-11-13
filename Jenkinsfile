@@ -1,9 +1,10 @@
-@Library('jenkins-library@opensource-helm-pipeline-release') _
-dockerbuildtestPipeline(
+@Library('jenkins-library@opensource-release-multiarch') _
+dockerImagePipeline(
   script: this,
-  service: 'slicegw-edge',
-  buildArguments: [PLATFORM:"amd64"],
-  run_unit_tests: 'false'
-  
+  services: ['slicegw-edge'],
+  dockerfiles: ['Dockerfile'],
+  pushed: true,
+  buildArgumentsList: [
+    [ENV: 'production', PLATFORM: 'linux/arm64,linux/amd64']
+]  
 )
-
